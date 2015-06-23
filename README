@@ -6,3 +6,4 @@ This syntax file will highlight the many common structures of the configuration.
 
 The syntax is far from complete, but many important parts have been implemented.
 
+Support for file type detection for files ending in .ciscoasa, .ciscoasa.cfg, .asa, .asa.cfg or if the file contains the string "ASA Version" at the start of the file.
