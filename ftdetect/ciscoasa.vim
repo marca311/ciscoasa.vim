@@ -4,7 +4,7 @@ autocmd BufNewFile,BufRead *.asa.cfg set filetype=ciscoasa
 autocmd BufNewFile,BufRead *.asa set filetype=ciscoasa
 
 function! s:DetectCiscoASA()
-    let v = getline(1,5)
+    let v = getline(1,10)
     for l in v 
        if l =~ '^ASA Version'
          set filetype=ciscoasa
