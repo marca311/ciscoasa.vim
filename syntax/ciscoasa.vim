@@ -26,7 +26,7 @@ syntax region asa_comment start=// end=//
 syntax match asa_comment /^\s*!.*/
 syntax match asa_string /.*/ contained
 syntax match asa_text /\S\+/ contained
-syntax match asa_word /\w\+/ contained
+syntax match asa_word /\(\w\|-\|\.\)\+/ contained
 syntax match asa_keyword /\w\+/ contained
 syntax match asa_ifname /\w\+/ contained
 syntax match asa_integer /\d\+/ contained
@@ -64,12 +64,12 @@ syntax keyword asa_acl_pd rem[ark] nextgroup=asa_acl_rem skipwhite contained
 syntax match asa_acl_rem /.*/ contained
 syntax keyword asa_acl_proto ip tcp udp icmp nextgroup=asa_acl_src skipwhite contained
 syntax match asa_acl_proto /\d\+/ nextgroup=asa_acl_src skipwhite contains=asa_integer contained
-syntax keyword asa_acl_protog object-group nextgroup=asa_acl_protogid skipwhite contained
+syntax keyword asa_acl_protog object object-group nextgroup=asa_acl_protogid skipwhite contained
 syntax match asa_acl_protogid /\w\+/ nextgroup=asa_acl_src skipwhite contains=asa_word contained
 syntax match asa_acl_src /\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}\s\+\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}/ nextgroup=asa_acl_sport,asa_acl_dst skipwhite contains=asa_ipnum_mask contained
 syntax match asa_acl_src /host\s\+\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}/ nextgroup=asa_acl_sport,asa_acl_dst skipwhite contains=asa_ipnum contained
 syntax match asa_acl_src /any/ nextgroup=asa_acl_sport,asa_acl_dst skipwhite contains=asa_ipnum contained
-syntax keyword asa_acl_src object-group nextgroup=asa_acl_sogid skipwhite contained
+syntax keyword asa_acl_src object object-group nextgroup=asa_acl_sogid skipwhite contained
 syntax match asa_acl_sogid /\w\+/ nextgroup=asa_acl_sport,asa_acl_dst skipwhite contains=asa_word contained
 syntax keyword asa_acl_sport lt gt eq neq nextgroup=asa_acl_sportid skipwhite contained
 syntax keyword asa_acl_sport ran[ge] nextgroup=asa_acl_sportr skipwhite contained
@@ -78,7 +78,7 @@ syntax match asa_acl_sportr /\d\+\s\+\d\+/ nextgroup=asa_acl_dst skipwhite conta
 syntax match asa_acl_dst /\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}\s\+\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}/ nextgroup=asa_acl_dport,asa_acl_icmp,asa_acl_trail,asa_acl_acct skipwhite contains=asa_ipnum_mask contained
 syntax match asa_acl_dst /host\s\+\d\{1,3}\.\d\{1,3}\.\d\{1,3}\.\d\{1,3}/ nextgroup=asa_acl_dport,asa_acl_icmp,asa_acl_trail,asa_acl_acct skipwhite contains=asa_ipnum contained
 syntax match asa_acl_dst /any/ nextgroup=asa_acl_dport,asa_acl_icmp,asa_acl_trail,asa_acl_acct skipwhite contains=asa_ipnum contained
-syntax keyword asa_acl_dst object-group nextgroup=asa_acl_dogid skipwhite contained
+syntax keyword asa_acl_dst object object-group nextgroup=asa_acl_dogid skipwhite contained
 syntax match asa_acl_dogid /\w\+/ nextgroup=asa_acl_dport,asa_acl_icmp,asa_acl_trail,asa_acl_acct skipwhite contains=asa_word contained
 syntax keyword asa_acl_dport lt gt eq neq nextgroup=asa_acl_dportid skipwhite contained
 syntax keyword asa_acl_dport ran[ge] nextgroup=asa_acl_dportr skipwhite contained
@@ -217,6 +217,8 @@ syntax keyword asa_ntp_opt sou[rce] ke[y] nextgroup=asa_ntp_src skipwhite contai
 syntax keyword asa_ntp_opt pref[er] contained
 syntax match asa_ntp_src /\w\+/ nextgroup=asa_ntp_opt skipwhite contains=asa_word contained
 
+syntax keyword asa_obj object nextgroup=asa_ogt skipwhite
+
 syntax keyword asa_og object-group nextgroup=asa_ogt skipwhite
 syntax keyword asa_ogt prot[ocol] net[work] icmp[-type] nextgroup=asa_word skipwhite contained
 syntax keyword asa_ogt ser[vice] nextgroup=asa_ogsn skipwhite contained
@@ -224,7 +226,10 @@ syntax match asa_ogsn /\w\+/ nextgroup=asa_ogs skipwhite contains=asa_word conta
 syntax keyword asa_ogs tcp ud[p] tcp-[udp] contained
 syntax keyword asa_oggo group-ob[ject] nextgroup=asa_word skipwhite
 syntax keyword asa_ogpo protocol-ob[ject] nextgroup=asa_ogpo_proto skipwhite
+syntax keyword asa_ogsob service-ob[ject] nextgroup=asa_ogsob_proto skipwhite
 syntax keyword asa_ogpo_proto ip tcp udp icmp contained
+syntax keyword asa_ogsob_proto ip tcp udp icmp nextgroup=asa_ogsob_dest skipwhite 
+syntax keyword asa_ogsob_dest destination nextgroup=asa_ogso_eq skipwhite
 syntax match asa_ogpo_proto /\d\+/ contains=asa_integer contained
 syntax keyword asa_ogno network-ob[ject] nextgroup=asa_ogno_no skipwhite
 syntax keyword asa_ogno_no ho[st] nextgroup=asa_iphost skipwhite contained
@@ -400,6 +405,7 @@ if version >= 508 || !exists("did_ciscoasa_syn_inits")
 	HiLink asa_ntp Keyword
 	HiLink asa_ntp_srv Keyword
 	HiLink asa_ntp_opt Keyword
+	HiLink asa_obj Keyword
 	HiLink asa_og Keyword
 	HiLink asa_ogt Keyword
 	HiLink asa_ogs Keyword
@@ -410,7 +416,10 @@ if version >= 508 || !exists("did_ciscoasa_syn_inits")
 	HiLink asa_ogno_no Keyword
 	HiLink asa_ogso Keyword
 	HiLink asa_ogso_eq Keyword
+	HiLink asa_ogsob Keyword
 	HiLink asa_ogso_port Type
+	HiLink asa_ogsob_proto Type
+	HiLink asa_ogsob_dest Keyword
 	HiLink asa_pager keyword
 	HiLink asa_pager_lines keyword
 	HiLink asa_passwd keyword
